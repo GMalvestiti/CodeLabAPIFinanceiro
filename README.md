@@ -1,28 +1,35 @@
-# CodeLabAPITemplate
+# CodeLabAPIFinanceiro
 
-Este é um template para criação de uma API do CodeLab. Utilize este template para criar a sua API NestJS dentro de um Docker Container.
+API de Financeiro do CodeLab.
 
-⚠️ Antes de inicar o projeto a partir do template, verifique os TODO's a substitua pelos valores corretos ⚠️
-
-## Development Start
+## Development
 
 ```bash
-docker compose up --build
+docker-compose up --build
 ```
 
-## Execução de Testes
+## Testing
 
-- "attach" ao container para executar os testes.
-- cato não deserje obter os relatórios de cobertura, remova o sufixo `:cov` dos comandos abaixo.
+Attach to the running container and run the tests.
 
 ### Unit
 
 ```bash
-npm run test:cov
+    npm run test:cov
 ```
 
 ### E2E
 
+Attach to the running container and run the tests.
+
 ```bash
-npm run test:e2e:cov
+    npm run test:e2e:cov
+```
+
+For not generating coverage reports, run without the `:cov` suffix.
+
+## CI/CD
+
+```bash
+
 ```

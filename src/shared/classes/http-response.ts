@@ -16,22 +16,22 @@ export class HttpResponse<T> implements IResponse<T> {
   }
 
   onCreated(): IResponse<T> {
-    this.message = EMensagem.SalvoSucesso;
+    this.message = EMensagem.SALVO_SUCESSO;
     return this;
   }
 
   onUpdated(): IResponse<T> {
-    this.message = EMensagem.AtualizadoSucesso;
+    this.message = EMensagem.ATUALIZADO_SUCESSO;
     return this;
   }
 
   onDeleted(): IResponse<T> {
-    this.message = EMensagem.ExcluidoSucesso;
+    this.message = EMensagem.EXCLUIDO_SUCESSO;
     return this;
   }
 
   onUnactivated(): IResponse<T> {
-    this.message = EMensagem.DesativadoSucesso;
+    this.message = EMensagem.DESATIVADO_SUCESSO;
     return this;
   }
 }

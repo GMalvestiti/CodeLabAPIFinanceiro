@@ -3,13 +3,22 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
+    "assets": [
+      "**/*.proto"
+    ],
+    "watchAssets": true,
     "deleteOutDir": true,
     "plugins": [
       {
         "name": "@nestjs/swagger/plugin",
         "options": {
-          "dtoFileNameSuffix": [".dto.ts", ".entity.ts"],
-          "controllerFileNameSuffix": [".controller.ts"],
+          "dtoFileNameSuffix": [
+            ".dto.ts",
+            ".entity.ts"
+          ],
+          "controllerFileNameSuffix": [
+            ".controller.ts"
+          ],
           "classValidatorShim": true,
           "dtoKeyOfComment": "description",
           "controllerKeyOfComment": "description",

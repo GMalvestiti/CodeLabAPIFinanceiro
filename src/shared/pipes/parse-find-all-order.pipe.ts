@@ -9,7 +9,7 @@ export class ParseFindAllOrderPipe implements PipeTransform {
     try {
       return JSON.parse(value as unknown as string) as IFindAllOrder;
     } catch (error) {
-      throw new Error(EMensagem.OrderInvalido);
+      throw new Error(EMensagem.ORDER_INVALIDO);
     }
   }
 }

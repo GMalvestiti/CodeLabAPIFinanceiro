@@ -8,7 +8,7 @@ import { ResponseTransformInterceptor } from './shared/interceptors/response-tra
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix('api/v1/financeiro');
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -23,15 +23,24 @@ async function bootstrap() {
 
   setupOpenAPI(app);
 
-  await app.listen(3000); // TODO: Change port
+  await app.listen(3005);
+
+  Logger.log(
+    `Application is running on: ${await app.getUrl()}`,
+    'CodeLabAPIFinanceiro',
+  );
 }
+
 bootstrap();
 
 function setupOpenAPI(app: INestApplication): void {
-  const config = new DocumentBuilder().setTitle('APITemplate').build(); // TODO: Change title
-  const document = SwaggerModule.createDocument(app, config);
+  if (process.env.NODE_ENV === 'development') {
+    const config = new DocumentBuilder()
+      .setTitle('CodeLabAPIFinanceiro')
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document, { useGlobalPrefix: true });
 
-  SwaggerModule.setup('docs', app, document, { useGlobalPrefix: true });
-
-  Logger.log('OpenAPI is running on http://localhost:3000/api/v1/docs'); // TODO - Change port
+    Logger.log(`Swagger UI is running on path /docs`, 'CodeLabAPIFinanceiro');
+  }
 }

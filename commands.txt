@@ -1,3 +1,0 @@
-nest new api-template --directory . > Cria um novo projeto NestJS na pasta atual
-
-sudo chown -R gustavo:gustavo . > Muda o dono do diretório para o usuário gustavo, de forma recursiva

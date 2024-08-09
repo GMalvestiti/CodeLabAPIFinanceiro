@@ -1,27 +1,38 @@
 services:
-  api-template: # TODO: Change this to your project name
-    container_name: api-template # TODO: Change this to your project name
+  api-financeiro:
+    container_name: api-financeiro
     build:
       context: .docker/node/
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
     entrypoint: .docker/node/entrypoint.sh
     ports:
-      - '3000:3000' # TODO: Change this to your project port
-      - '7000:7000' # TODO: Change this to your project debug port
+      - '3005:3005'
+      - '7005:7005'
     volumes:
-      - ./:/home/node/app
+      - .:/home/node/app
+    networks:
+      - codelab-net
 
-  db-template: # TODO: Change this to your project db name
-    container_name: db-template # TODO: Change this to your project db name
+  db-financeiro:
+    container_name: db-financeiro
     build:
-      context: .docker/postgres/
+      context: ./.docker/postgres
       dockerfile: Dockerfile
-    command: postgres -c log_statement=all # TODO: add -p NNNN to change the port
+    command: postgres -c log_statement=all -p 5005
     volumes:
-      - ./.docker/postgres/data:/var/lib/postgresql/data
+      - '.docker/postgres/data:/var/lib/postgresql/data'
     environment:
-      POSTGRES_DB: template # TODO: Change this to your project db name
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=api-financeiro
     ports:
-      - '5432:5432' # TODO: Change this to your project db port
+      - '5005:5005'
+    networks:
+      - codelab-net
+
+networks:
+  codelab-net:
+    name: codelab-net
+    external: true

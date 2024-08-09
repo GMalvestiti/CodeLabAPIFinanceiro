@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('DB_HOST'),
@@ -15,8 +16,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         logging: configService.get('DB_LOGGING') === 'true' ? true : ['error'],
         // Apenas bom para ambiente de desenvolvimento
-        synchronize: true,
-        autoLoadEntities: true,
+        synchronize: configService.get('DB_SYNCHRONIZE') || false,
+        autoLoadEntities: configService.get('DB_SYNCHRONIZE') || false,
       }),
       inject: [ConfigService],
     }),
