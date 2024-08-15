@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Container started"
+echo "Container em execução"
 
 # tail -f /dev/null
 
