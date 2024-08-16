@@ -3,11 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
+import { Ctx, MessagePattern, Payload, RmqContext, Transport } from '@nestjs/microservices';
 import { HttpResponse } from '../../shared/classes/http-response';
 import { EMensagem } from '../../shared/enums/mensagem.enum';
 import { IFindAllFilter } from '../../shared/interfaces/find-all-filter.interface';
@@ -15,13 +18,17 @@ import { IFindAllOrder } from '../../shared/interfaces/find-all-order.interface'
 import { IResponse } from '../../shared/interfaces/response.interface';
 import { ParseFindAllFilterPipe } from '../../shared/pipes/parse-find-all-filter.pipe';
 import { ParseFindAllOrderPipe } from '../../shared/pipes/parse-find-all-order.pipe';
+import { ChannelRef } from '../../shared/types/rabbitmq.type';
 import { ContaReceberService } from './conta-receber.service';
+import { CreateContaReceberBaixaDto } from './dto/create-conta-receber-baixa.dto';
 import { CreateContaReceberDto } from './dto/create-conta-receber.dto';
 import { UpdateContaReceberDto } from './dto/update-conta-receber.dto';
 import { ContaReceber } from './entities/conta-receber.entity';
 
 @Controller('conta-receber')
 export class ContaReceberController {
+  private readonly logger = new Logger(ContaReceberController.name);
+
   constructor(private readonly contaReceberService: ContaReceberService) {}
 
   @Post()
@@ -94,5 +101,38 @@ export class ContaReceberController {
     return new HttpResponse<boolean>(data).onSuccess(
       EMensagem.INICIADA_GERACAO_PDF,
     );
+  }
+
+  @Put('baixar')
+  async baixar(
+    @Body() createContaReceberBaixaDto: CreateContaReceberBaixaDto
+  ): Promise<IResponse<boolean>> {
+    const data = await this.contaReceberService.baixar(
+      createContaReceberBaixaDto
+    );
+
+    return new HttpResponse<boolean>(data).onSuccess(
+      EMensagem.BAIXA_REALIZADA,
+    );
+  }
+
+  @MessagePattern('create-conta-receber', Transport.RMQ)
+  async createAsync(
+    @Payload() data: CreateContaReceberDto,
+    @Ctx() context: RmqContext,
+  ): Promise<void> {
+    const channel = context.getChannelRef() as ChannelRef;
+    const originalMessage = context.getMessage as unknown;
+
+    try {
+      this.logger.log(`receive message 'create-conta-receber': ${data}`);
+
+      await this.contaReceberService.create(data);
+    } catch (error) {
+      this.logger.error(error.message);
+    } finally {
+      channel.ack(originalMessage);
+      this.logger.log(`receive message 'create-conta-receber' [OK]: ${data}`);
+    }
   }
 }

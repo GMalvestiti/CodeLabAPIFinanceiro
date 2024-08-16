@@ -22,8 +22,10 @@ import { IFindAllOrder } from '../../shared/interfaces/find-all-order.interface'
 import { IGrpcUsuarioService } from '../../shared/interfaces/grpc-usuario.service';
 import { IUsuario } from '../../shared/interfaces/usuario.interface';
 import { ExportPdfService } from '../../shared/services/export-pdf.service';
+import { CreateContaReceberBaixaDto } from './dto/create-conta-receber-baixa.dto';
 import { CreateContaReceberDto } from './dto/create-conta-receber.dto';
 import { UpdateContaReceberDto } from './dto/update-conta-receber.dto';
+import { ContaReceberBaixa } from './entities/conta-receber-baixa.entity';
 import { ContaReceber } from './entities/conta-receber.entity';
 
 @Injectable()
@@ -35,6 +37,9 @@ export class ContaReceberService {
 
   @InjectRepository(ContaReceber)
   private repository: Repository<ContaReceber>;
+
+  @InjectRepository(ContaReceberBaixa)
+  private repositoryBaixa: Repository<ContaReceberBaixa>;
 
   @Inject(ExportPdfService)
   private exportPdfService: ExportPdfService;
@@ -202,5 +207,56 @@ export class ContaReceberService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async baixar(createContaReceberBaixaDto: CreateContaReceberBaixaDto): Promise<boolean> {
+    const contaReceber = await this.repository.findOne({
+      where: { id: createContaReceberBaixaDto.idContaReceber }
+    });
+
+    if (!contaReceber) {
+      throw new HttpException(
+        EMensagem.NAO_ENCONTRADO,
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    if (contaReceber.pago) {
+      throw new HttpException(EMensagem.JA_BAIXADO, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    // let valorPago = 0;
+    // for (const item of contaReceber.baixa) {
+    //   valorPago += item.valorPago;
+    // }
+
+    const valorPago = contaReceber.baixa.reduce(
+      (acc, baixa) => acc + Number(baixa.valorPago),
+      0
+    )
+
+    const valorRestante = contaReceber.valorTotal - valorPago;
+
+    if (
+      createContaReceberBaixaDto.valorPago > valorRestante || 
+      createContaReceberBaixaDto.valorPago > contaReceber.valorTotal
+    ) {
+      throw new HttpException(
+        EMensagem.VALOR_INVALIDO, 
+        HttpStatus.NOT_ACCEPTABLE
+      );
+    }
+
+    const created = this.repositoryBaixa.create(
+      new ContaReceberBaixa(createContaReceberBaixaDto),
+    );
+
+    await this.repositoryBaixa.save(created);
+
+    if (createContaReceberBaixaDto.valorPago == valorRestante) {
+      this.repository.update(contaReceber.id, { pago: true });
+    }
+
+    return true;
   }
 }

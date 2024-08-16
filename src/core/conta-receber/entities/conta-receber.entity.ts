@@ -2,10 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CreateContaReceberDto } from '../dto/create-conta-receber.dto';
 import { UpdateContaReceberDto } from '../dto/update-conta-receber.dto';
+import { ContaReceberBaixa } from './conta-receber-baixa.entity';
 
 @Entity('conta-receber')
 export class ContaReceber {
@@ -29,6 +31,14 @@ export class ContaReceber {
 
   @Column({ nullable: false })
   pago: boolean;
+
+  @OneToMany(() => ContaReceberBaixa, (baixa) => baixa.contaReceber, {
+    eager: true,
+    onDelete: 'CASCADE',
+    cascade: ['insert', 'update'],
+    orphanedRowAction: 'delete'
+  })
+  baixa: ContaReceberBaixa[];
 
   constructor(
     createContaReceberDto: CreateContaReceberDto | UpdateContaReceberDto,

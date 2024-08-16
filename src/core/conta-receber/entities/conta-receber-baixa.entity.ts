@@ -6,6 +6,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CreateContaReceberBaixaDto } from '../dto/create-conta-receber-baixa.dto';
+import { UpdateContaReceberBaixaDto } from '../dto/update-conta-receber-baixa.dto';
 import { ContaReceber } from './conta-receber.entity';
 
 @Entity('conta-receber-baixa')
@@ -33,4 +35,12 @@ export class ContaReceberBaixa {
     foreignKeyConstraintName: 'fk_conta-receber-baixa',
   })
   contaReceber: ContaReceber;
+
+  constructor(
+    createContaReceberDto: 
+      | CreateContaReceberBaixaDto
+      | UpdateContaReceberBaixaDto
+  ) {
+    Object.assign(this, createContaReceberDto);
+  }
 }

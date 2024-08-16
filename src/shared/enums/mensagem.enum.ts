@@ -1,6 +1,7 @@
 export enum EMensagem {
   ATUALIZADO_SUCESSO = 'Atualizado com sucesso.',
   AUTENTICADO_SUCESSO = 'Autenticado com sucesso.',
+  BAIXA_REALIZADA = 'Baixa realizada.',
   DESATIVADO_SUCESSO = 'Desativado com sucesso.',
   DEVE_SER_INFORMADO = 'deve ser informado.',
   DEVE_SER_VAZIO = 'deve ser vazio.',
@@ -14,8 +15,10 @@ export enum EMensagem {
   IMPOSSIVEL_CADASTRAR = 'Impossível realizar o cadastro.',
   IMPOSSIVEL_DESATIVAR = 'Impossível desativar o cadastro.',
   INICIADA_GERACAO_PDF = 'Iniciada a geração do PDF.',
+  JA_BAIXADO = 'Registro já baixado.',
   MAIS_CARACTERES_QUE_PERMITIDO = 'possui mais caracteres que o permitido.',
   MENOS_CARACTERES_QUE_PERMITIDO = 'a quantidade de caracteres é menor do que o permitido',
+  NAO_ENCONTRADO = 'Registro não encontrado.',
   NAO_PODE_SER_VAZIO = 'não pode ser vazio.',
   NAO_VALIDO = 'não é válido.',
   ORDER_INVALIDO = 'Order inválido.',
@@ -26,5 +29,6 @@ export enum EMensagem {
   TOKEN_INVALIDO = 'Token inválido.',
   USUARIO_NAO_IDENTIFICADO = 'Usuário não identificado.',
   USUARIO_SENHA_INVALIDOS = 'Usuário e/ou senha inválidos.',
+  VALOR_INVALIDO = 'Valor inválido.',
   VERIFIQUE_ENDERECO_EMAIL_INFORMADO = 'Verifique o endereço de e-mail informado.',
 }
