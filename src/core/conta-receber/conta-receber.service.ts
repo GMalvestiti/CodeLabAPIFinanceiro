@@ -6,6 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { readFileSync } from 'fs';
 import { lastValueFrom } from 'rxjs';
@@ -22,6 +23,7 @@ import { IFindAllOrder } from '../../shared/interfaces/find-all-order.interface'
 import { IGrpcUsuarioService } from '../../shared/interfaces/grpc-usuario.service';
 import { IUsuario } from '../../shared/interfaces/usuario.interface';
 import { ExportPdfService } from '../../shared/services/export-pdf.service';
+import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { CreateContaReceberBaixaDto } from './dto/create-conta-receber-baixa.dto';
 import { CreateContaReceberDto } from './dto/create-conta-receber.dto';
 import { UpdateContaReceberDto } from './dto/update-conta-receber.dto';
@@ -43,6 +45,9 @@ export class ContaReceberService {
 
   @Inject(ExportPdfService)
   private exportPdfService: ExportPdfService;
+
+  @Inject(RedisCacheService)
+  private redisCacheService: RedisCacheService;
 
   private grpcUsuarioService: IGrpcUsuarioService;
 
@@ -258,5 +263,38 @@ export class ContaReceberService {
     }
 
     return true;
+  }
+
+  async findTotais(pago: boolean, mesAtual = false): Promise<number> {
+    let dataHoraCondition = 'IS NOT NULL';
+
+    if (mesAtual) {
+      dataHoraCondition = ` >= date_trunc('month', CURRENT_DATE)`;
+    }
+
+    const result: { total: number } = await this.repository
+      .createQueryBuilder('contaReceber')
+      .select('SUM(contaReceber.valorTotal)', 'total')
+      .where('contaReceber.pago = :pago', { pago })
+      .andWhere('contaReceber.dataHora ' + dataHoraCondition)
+      .getRawOne();
+    
+    return result.total;
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async refreshCache(): Promise<void> {
+    this.logger.log('start refresh cache');
+
+    const abertoTotal = await this.findTotais(false);
+    const abertoMensal = await this.findTotais(false, true);
+
+    const pagoTotal = await this.findTotais(true);
+    const pagoMensal = await this.findTotais(true, true);
+
+    await this.redisCacheService.set('abertoTotal', abertoTotal);
+    await this.redisCacheService.set('abertoMensal', abertoMensal);
+    await this.redisCacheService.set('pagoTotal', pagoTotal);
+    await this.redisCacheService.set('pagoMensal', pagoMensal);
   }
 }

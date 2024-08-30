@@ -9,13 +9,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { grpcClientConfig } from '../../config/grpc/grpc.config';
 import { ExportPdfService } from '../../shared/services/export-pdf.service';
 import { RmqClientService } from '../../shared/services/rmq-client.service';
+import { RedisCacheModule } from '../redis-cache/redis-cache.module';
 import { ContaReceberController } from './conta-receber.controller';
 import { ContaReceberService } from './conta-receber.service';
 import { ContaReceberBaixa } from './entities/conta-receber-baixa.entity';
 import { ContaReceber } from './entities/conta-receber.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ContaReceber, ContaReceberBaixa])],
+  imports: [
+    TypeOrmModule.forFeature([ContaReceber, ContaReceberBaixa]),
+    RedisCacheModule,
+  ],
   controllers: [ContaReceberController],
   providers: [
     ContaReceberService,
