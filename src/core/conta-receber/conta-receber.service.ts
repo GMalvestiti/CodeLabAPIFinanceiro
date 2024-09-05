@@ -214,16 +214,15 @@ export class ContaReceberService {
     }
   }
 
-  async baixar(createContaReceberBaixaDto: CreateContaReceberBaixaDto): Promise<boolean> {
+  async baixar(
+    createContaReceberBaixaDto: CreateContaReceberBaixaDto,
+  ): Promise<boolean> {
     const contaReceber = await this.repository.findOne({
-      where: { id: createContaReceberBaixaDto.idContaReceber }
+      where: { id: createContaReceberBaixaDto.idContaReceber },
     });
 
     if (!contaReceber) {
-      throw new HttpException(
-        EMensagem.NAO_ENCONTRADO,
-        HttpStatus.NOT_FOUND
-      );
+      throw new HttpException(EMensagem.NAO_ENCONTRADO, HttpStatus.NOT_FOUND);
     }
 
     if (contaReceber.pago) {
@@ -237,18 +236,18 @@ export class ContaReceberService {
 
     const valorPago = contaReceber.baixa.reduce(
       (acc, baixa) => acc + Number(baixa.valorPago),
-      0
-    )
+      0,
+    );
 
     const valorRestante = contaReceber.valorTotal - valorPago;
 
     if (
-      createContaReceberBaixaDto.valorPago > valorRestante || 
+      createContaReceberBaixaDto.valorPago > valorRestante ||
       createContaReceberBaixaDto.valorPago > contaReceber.valorTotal
     ) {
       throw new HttpException(
-        EMensagem.VALOR_INVALIDO, 
-        HttpStatus.NOT_ACCEPTABLE
+        EMensagem.VALOR_INVALIDO,
+        HttpStatus.NOT_ACCEPTABLE,
       );
     }
 
@@ -269,7 +268,7 @@ export class ContaReceberService {
     let dataHoraCondition = 'IS NOT NULL';
 
     if (mesAtual) {
-      dataHoraCondition = ` >= date_trunc('month', CURRENT_DATE)`;
+      dataHoraCondition = `>= date_trunc('month', CURRENT_DATE)`;
     }
 
     const result: { total: number } = await this.repository
@@ -278,7 +277,11 @@ export class ContaReceberService {
       .where('contaReceber.pago = :pago', { pago })
       .andWhere('contaReceber.dataHora ' + dataHoraCondition)
       .getRawOne();
-    
+
+    if (result == null || result.total === null) {
+      return -1;
+    }
+
     return result.total;
   }
 

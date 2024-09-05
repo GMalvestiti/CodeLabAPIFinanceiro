@@ -10,7 +10,7 @@ WORKDIR /home/node/app
 
 RUN chmod -R u+rwx .
 
-RUN npm i -g npm@10.8.2
+RUN npm i -g npm@10.8.3
 
 RUN npm i -g @nestjs/cli
 

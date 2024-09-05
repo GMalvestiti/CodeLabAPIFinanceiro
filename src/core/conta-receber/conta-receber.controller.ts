@@ -10,7 +10,13 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { Ctx, MessagePattern, Payload, RmqContext, Transport } from '@nestjs/microservices';
+import {
+  Ctx,
+  MessagePattern,
+  Payload,
+  RmqContext,
+  Transport,
+} from '@nestjs/microservices';
 import { HttpResponse } from '../../shared/classes/http-response';
 import { EMensagem } from '../../shared/enums/mensagem.enum';
 import { IFindAllFilter } from '../../shared/interfaces/find-all-filter.interface';
@@ -105,15 +111,13 @@ export class ContaReceberController {
 
   @Put('baixar')
   async baixar(
-    @Body() createContaReceberBaixaDto: CreateContaReceberBaixaDto
+    @Body() createContaReceberBaixaDto: CreateContaReceberBaixaDto,
   ): Promise<IResponse<boolean>> {
     const data = await this.contaReceberService.baixar(
-      createContaReceberBaixaDto
+      createContaReceberBaixaDto,
     );
 
-    return new HttpResponse<boolean>(data).onSuccess(
-      EMensagem.BAIXA_REALIZADA,
-    );
+    return new HttpResponse<boolean>(data).onSuccess(EMensagem.BAIXA_REALIZADA);
   }
 
   @MessagePattern('create-conta-receber', Transport.RMQ)

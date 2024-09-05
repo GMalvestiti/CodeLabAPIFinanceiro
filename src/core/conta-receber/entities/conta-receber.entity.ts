@@ -36,7 +36,7 @@ export class ContaReceber {
     eager: true,
     onDelete: 'CASCADE',
     cascade: ['insert', 'update'],
-    orphanedRowAction: 'delete'
+    orphanedRowAction: 'delete',
   })
   baixa: ContaReceberBaixa[];
 

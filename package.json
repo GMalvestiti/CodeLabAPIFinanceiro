@@ -40,6 +40,7 @@
     "@types/cron": "^2.0.1",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.4",
+    "api-template": "file:",
     "bcryptjs": "^2.4.3",
     "cache-manager": "3.4.3",
     "cache-manager-redis-store": "2.0.0",

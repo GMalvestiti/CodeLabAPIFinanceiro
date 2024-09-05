@@ -33,7 +33,9 @@ describe('AppController (e2e)', () => {
     await app.startAllMicroservices();
     await app.init();
 
-    repository = app.get<Repository<Financeiro>>(getRepositoryToken(Financeiro));
+    repository = app.get<Repository<Financeiro>>(
+      getRepositoryToken(Financeiro),
+    );
   });
 
   afterAll(async () => {
@@ -142,7 +144,9 @@ describe('AppController (e2e)', () => {
         ativo: true,
       };
 
-      await request(app.getHttpServer()).post('/financeiro').send(financeiroTemp);
+      await request(app.getHttpServer())
+        .post('/financeiro')
+        .send(financeiroTemp);
 
       const financeiroAlterado = Object.assign(financeiro, {
         id: id,
@@ -166,7 +170,9 @@ describe('AppController (e2e)', () => {
     });
 
     it('desativa o financeiro criado', async () => {
-      const resp = await request(app.getHttpServer()).delete(`/financeiro/${id}`);
+      const resp = await request(app.getHttpServer()).delete(
+        `/financeiro/${id}`,
+      );
 
       expect(resp.status).toBe(HttpStatus.OK);
       expect(resp.body.data).toBe(false);

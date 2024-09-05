@@ -37,9 +37,9 @@ export class ContaReceberBaixa {
   contaReceber: ContaReceber;
 
   constructor(
-    createContaReceberDto: 
+    createContaReceberDto:
       | CreateContaReceberBaixaDto
-      | UpdateContaReceberBaixaDto
+      | UpdateContaReceberBaixaDto,
   ) {
     Object.assign(this, createContaReceberDto);
   }

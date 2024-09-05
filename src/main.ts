@@ -25,7 +25,7 @@ async function bootstrap() {
   app.enableCors();
 
   app.connectMicroservice<MicroserviceOptions>(
-    rmqConfig(app.get(ConfigService), 'financeiro.create-conta-receber')
+    rmqConfig(app.get(ConfigService), 'financeiro.create-conta-receber'),
   );
   await app.startAllMicroservices();
 

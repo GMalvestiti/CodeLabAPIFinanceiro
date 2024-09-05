@@ -1,8 +1,8 @@
 ﻿import { ConfigService } from '@nestjs/config';
 import {
-    GrpcOptions,
-    MicroserviceOptions,
-    Transport,
+  GrpcOptions,
+  MicroserviceOptions,
+  Transport,
 } from '@nestjs/microservices';
 import { join } from 'path';
 

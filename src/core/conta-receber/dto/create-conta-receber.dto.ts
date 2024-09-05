@@ -11,7 +11,9 @@ export class CreateContaReceberDto {
   @IsNotEmpty({ message: `pessoa ${EMensagem.NAO_PODE_SER_VAZIO}` })
   pessoa: string;
 
-  @IsNotEmpty({ message: `idUsuarioLancamento ${EMensagem.NAO_PODE_SER_VAZIO}` })
+  @IsNotEmpty({
+    message: `idUsuarioLancamento ${EMensagem.NAO_PODE_SER_VAZIO}`,
+  })
   idUsuarioLancamento: number;
 
   @IsNotEmpty({ message: `valorTotal ${EMensagem.NAO_PODE_SER_VAZIO}` })

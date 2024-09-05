@@ -28,7 +28,9 @@ describe('ContaReceberService', () => {
 
     service = module.get<ContaReceberService>(ContaReceberService);
 
-    repository = module.get<Repository<ContaReceber>>(getRepositoryToken(ContaReceber));
+    repository = module.get<Repository<ContaReceber>>(
+      getRepositoryToken(ContaReceber),
+    );
   });
 
   it('should be defined', () => {
