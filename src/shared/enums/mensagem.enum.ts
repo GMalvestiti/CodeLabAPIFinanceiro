@@ -23,7 +23,7 @@ export enum EMensagem {
   NAO_VALIDO = 'não é válido.',
   ORDER_INVALIDO = 'Order inválido.',
   PESSOA_SENHA_INVALIDOS = 'Usuário e/ou senha inválidos',
-  PRODUTO_SENHA_INVALIDOS = 'Usuário e/ou senha inválidos',
+  PRODUTO_SENHA_INVALIDOS = 'Produto e/ou senha inválidos',
   SALVO_SUCESSO = 'Salvo com sucesso.',
   TIPO_INVALIDO = 'Tipo inválido.',
   TOKEN_INVALIDO = 'Token inválido.',

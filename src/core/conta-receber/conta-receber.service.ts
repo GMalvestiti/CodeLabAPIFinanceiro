@@ -257,11 +257,30 @@ export class ContaReceberService {
 
     await this.repositoryBaixa.save(created);
 
-    if (createContaReceberBaixaDto.valorPago == valorRestante) {
+    if (
+      createContaReceberBaixaDto.valorPago == valorRestante ||
+      valorRestante == 0
+    ) {
       this.repository.update(contaReceber.id, { pago: true });
     }
 
     return true;
+  }
+
+  async findTotalPago(mesAtual: boolean): Promise<number> {
+    const cacheKey = mesAtual ? 'pagoMensal' : 'pagoTotal';
+
+    let totalPago = await this.redisCacheService.get<number>(cacheKey);
+
+    if (totalPago) {
+      return totalPago;
+    }
+
+    totalPago = await this.findTotais(true, mesAtual);
+
+    await this.redisCacheService.set(cacheKey, totalPago);
+
+    return totalPago;
   }
 
   async findTotais(pago: boolean, mesAtual = false): Promise<number> {
@@ -285,7 +304,7 @@ export class ContaReceberService {
     return result.total;
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async refreshCache(): Promise<void> {
     this.logger.log('start refresh cache');
 

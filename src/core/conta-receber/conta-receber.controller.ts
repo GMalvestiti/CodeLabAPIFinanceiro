@@ -120,6 +120,15 @@ export class ContaReceberController {
     return new HttpResponse<boolean>(data).onSuccess(EMensagem.BAIXA_REALIZADA);
   }
 
+  @Get('total-pago/:mesAtual')
+  async findTotalPago(
+    @Param('mesAtual') mesAtual: boolean,
+  ): Promise<IResponse<number>> {
+    const data = await this.contaReceberService.findTotalPago(mesAtual);
+
+    return new HttpResponse<number>(data).onSuccess('');
+  }
+
   @MessagePattern('create-conta-receber', Transport.RMQ)
   async createAsync(
     @Payload() data: CreateContaReceberDto,
