@@ -23,7 +23,7 @@ export class ContaReceberBaixa {
   @Column({ nullable: false })
   idUsuarioBaixa: number;
 
-  @Column({ type: 'numeric', precision: 13, scale: 3, nullable: false })
+  @Column({ type: 'numeric', precision: 13, scale: 2, nullable: false })
   valorPago: number;
 
   @CreateDateColumn()

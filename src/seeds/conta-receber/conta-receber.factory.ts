@@ -8,8 +8,12 @@ define(ContaReceber, () => {
 
   contaReceber.idPessoa = faker.number.int({ max: 20 });
   contaReceber.pessoa = faker.person.fullName().substring(0, 100);
-  contaReceber.valorTotal = faker.number.float({ min: 0, max: 1000 });
-  contaReceber.idUsuarioLancamento = 1;
+  contaReceber.valorTotal = faker.number.float({
+    min: 0,
+    max: 1000,
+    fractionDigits: 2,
+  });
+  contaReceber.idUsuarioLancamento = faker.number.int({ max: 20 });
   contaReceber.pago = false;
   contaReceber.baixa = [];
 
