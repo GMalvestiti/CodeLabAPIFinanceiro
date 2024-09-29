@@ -18,10 +18,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
   app.useGlobalInterceptors(new ResponseTransformInterceptor());
   app.useGlobalFilters(new ResponseExceptionsFilter());
-
   app.enableCors();
 
   app.connectMicroservice<MicroserviceOptions>(
@@ -35,20 +33,17 @@ async function bootstrap() {
 
   Logger.log(
     `Application is running on: ${await app.getUrl()}`,
-    'CodeLabAPIFinanceiro',
+    'APIFinanceiro',
   );
 }
 
 bootstrap();
 
 function setupOpenAPI(app: INestApplication): void {
-  if (process.env.NODE_ENV === 'development') {
-    const config = new DocumentBuilder()
-      .setTitle('CodeLabAPIFinanceiro')
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('docs', app, document, { useGlobalPrefix: true });
+  const config = new DocumentBuilder().setTitle('APIFinanceiro').build();
+  const document = SwaggerModule.createDocument(app, config);
 
-    Logger.log(`Swagger UI is running on path /docs`, 'CodeLabAPIFinanceiro');
-  }
+  SwaggerModule.setup('docs', app, document, { useGlobalPrefix: true });
+
+  Logger.log('OpenAPI is running on http://localhost:3005/api/v1/docs');
 }

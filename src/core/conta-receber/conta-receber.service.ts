@@ -29,6 +29,7 @@ import { CreateContaReceberDto } from './dto/create-conta-receber.dto';
 import { UpdateContaReceberDto } from './dto/update-conta-receber.dto';
 import { ContaReceberBaixa } from './entities/conta-receber-baixa.entity';
 import { ContaReceber } from './entities/conta-receber.entity';
+import { IResponse } from 'src/shared/interfaces/response.interface';
 
 @Injectable()
 export class ContaReceberService {
@@ -74,24 +75,23 @@ export class ContaReceberService {
     size: number,
     order: IFindAllOrder,
     filter?: IFindAllFilter | IFindAllFilter[],
-  ): Promise<ContaReceber[]> {
-    page--;
-
+  ): Promise<IResponse<ContaReceber[]>> {
     const where = handleFilter(filter);
 
-    return await this.repository.find({
+    const [data, count] = await this.repository.findAndCount({
       loadEagerRelations: false,
-      order: {
-        [order.column]: order.sort,
-      },
+      order: { [order.column]: order.sort },
       where,
       skip: size * page,
       take: size,
     });
+
+    return { data, count, message: null };
   }
 
   async findOne(id: number): Promise<ContaReceber> {
     return await this.repository.findOne({
+      loadEagerRelations: true,
       where: { id: id },
     });
   }
@@ -107,10 +107,39 @@ export class ContaReceberService {
       );
     }
 
-    return await this.repository.save(new ContaReceber(updateContaReceberDto));
+    const finded = await this.repository.findOne({
+      select: ['id'],
+      where: { id: updateContaReceberDto.id },
+    });
+
+    if (!finded) {
+      throw new HttpException(
+        EMensagem.IMPOSSIVEL_ALTERAR,
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
+
+    await this.repositoryBaixa.delete({ idContaReceber: id });
+
+    for (const baixa in updateContaReceberDto.baixa) {
+      Object.assign(updateContaReceberDto.baixa[baixa], { idContaReceber: id });
+    }
+
+    return await this.repository.save(updateContaReceberDto);
   }
 
   async delete(id: number): Promise<boolean> {
+    const finded = await this.repository.findOne({
+      where: { id: id },
+    });
+
+    if (!finded) {
+      throw new HttpException(
+        EMensagem.IMPOSSIVEL_EXCLUIR,
+        HttpStatus.NOT_ACCEPTABLE,
+      );
+    }
+
     return await this.repository
       .delete(id)
       .then((result) => result.affected === 1);
@@ -228,11 +257,6 @@ export class ContaReceberService {
     if (contaReceber.pago) {
       throw new HttpException(EMensagem.JA_BAIXADO, HttpStatus.NOT_ACCEPTABLE);
     }
-
-    // let valorPago = 0;
-    // for (const item of contaReceber.baixa) {
-    //   valorPago += item.valorPago;
-    // }
 
     const valorPago = contaReceber.baixa.reduce(
       (acc, baixa) => acc + Number(baixa.valorPago),

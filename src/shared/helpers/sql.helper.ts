@@ -11,17 +11,17 @@ export const handleFilter = (filter: IFindAllFilter | IFindAllFilter[]) => {
   const whereClause = {};
 
   for (const f of filters) {
-    if (typeof f.value === 'string') {
-      Object.assign(whereClause, {
-        [f.column]: ILike(`%${f.value}%`),
-      });
-
+    if (f.value === 'true' || f.value === 'false') {
+      Object.assign(whereClause, { [f.column]: Boolean(f.value) });
       continue;
     }
 
-    Object.assign(whereClause, {
-      [f.column]: f.value,
-    });
+    if (isNaN(Number(f.value))) {
+      Object.assign(whereClause, { [f.column]: ILike(`%${f.value}%`) });
+      continue;
+    }
+
+    Object.assign(whereClause, { [f.column]: Number(f.value) });
   }
 
   return whereClause;

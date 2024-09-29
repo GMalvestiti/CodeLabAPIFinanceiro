@@ -54,19 +54,19 @@ export class ContaReceberController {
     @Query('filter', ParseFindAllFilterPipe)
     filter: IFindAllFilter | IFindAllFilter[],
   ): Promise<IResponse<ContaReceber[]>> {
-    const data = await this.contaReceberService.findAll(
+    const { data, count } = await this.contaReceberService.findAll(
       page,
       size,
       order,
       filter,
     );
 
-    return new HttpResponse<ContaReceber[]>(data);
+    return new HttpResponse<ContaReceber[]>(data, undefined, count);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<IResponse<ContaReceber>> {
-    const data = await this.contaReceberService.findOne(+id);
+    const data = await this.contaReceberService.findOne(id);
 
     return new HttpResponse<ContaReceber>(data);
   }
@@ -77,16 +77,16 @@ export class ContaReceberController {
     @Body() updateContaReceberDto: UpdateContaReceberDto,
   ): Promise<IResponse<ContaReceber>> {
     const data = await this.contaReceberService.update(
-      +id,
+      id,
       updateContaReceberDto,
     );
 
-    return new HttpResponse<ContaReceber>(data).onUpdated();
+    return new HttpResponse<ContaReceber>(data).onUpdate();
   }
 
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<IResponse<boolean>> {
-    const data = await this.contaReceberService.delete(+id);
+    const data = await this.contaReceberService.delete(id);
 
     return new HttpResponse<boolean>(data).onUnactivated();
   }

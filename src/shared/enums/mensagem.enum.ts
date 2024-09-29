@@ -14,6 +14,7 @@ export enum EMensagem {
   IMPOSSIVEL_ALTERAR = 'Impossível alterar.',
   IMPOSSIVEL_CADASTRAR = 'Impossível realizar o cadastro.',
   IMPOSSIVEL_DESATIVAR = 'Impossível desativar o cadastro.',
+  IMPOSSIVEL_EXCLUIR = 'Impossível excluir o cadastro.',
   INICIADA_GERACAO_PDF = 'Iniciada a geração do PDF.',
   JA_BAIXADO = 'Registro já baixado.',
   MAIS_CARACTERES_QUE_PERMITIDO = 'possui mais caracteres que o permitido.',

@@ -1,5 +1,5 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
-import { Observable, map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { IResponse } from '../interfaces/response.interface';
 
 export class ResponseTransformInterceptor<T>
@@ -19,6 +19,7 @@ export class ResponseTransformInterceptor<T>
     const responseFormated = {
       message: data?.message ?? null,
       data: data?.data ?? data,
+      count: data?.count ?? undefined,
     };
 
     return responseFormated as IResponse<T>;
