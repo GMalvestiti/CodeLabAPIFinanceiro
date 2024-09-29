@@ -258,6 +258,10 @@ export class ContaReceberService {
       throw new HttpException(EMensagem.JA_BAIXADO, HttpStatus.NOT_ACCEPTABLE);
     }
 
+    createContaReceberBaixaDto.valorPago = Number(
+      createContaReceberBaixaDto.valorPago,
+    );
+
     const valorPago = contaReceber.baixa.reduce(
       (acc, baixa) => acc + Number(baixa.valorPago),
       0,
