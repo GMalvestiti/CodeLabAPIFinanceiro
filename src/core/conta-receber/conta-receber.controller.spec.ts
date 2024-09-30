@@ -1,7 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { HttpResponse } from '../../shared/classes/http-response';
 import { EMensagem } from '../../shared/enums/mensagem.enum';
+import { IFindAllFilter } from '../../shared/interfaces/find-all-filter.interface';
+import { IFindAllOrder } from '../../shared/interfaces/find-all-order.interface';
+import { CreateContaReceberDto } from './dto/create-conta-receber.dto';
+import { UpdateContaReceberDto } from './dto/update-conta-receber.dto';
+import { ContaReceber } from './entities/conta-receber.entity';
 import { ContaReceberController } from './conta-receber.controller';
 import { ContaReceberService } from './conta-receber.service';
+
+const mockCreateContaReceberDto: CreateContaReceberDto = {
+  idPessoa: 1,
+  pessoa: 'Teste Pessoa',
+  idUsuarioLancamento: 1,
+  valorTotal: 1000,
+  pago: false,
+  baixa: [],
+};
+
+const mockUpdateContaReceberDto: UpdateContaReceberDto = Object.assign(
+  mockCreateContaReceberDto,
+  { id: 1 },
+);
+
+const mockContaReceber: ContaReceber = new ContaReceber(
+  mockUpdateContaReceberDto,
+);
+
+const mockFindAllOrder: IFindAllOrder = {
+  column: 'id',
+  sort: 'asc',
+};
+
+const mockFindAllFilter: IFindAllFilter = {
+  column: 'id',
+  value: 1,
+};
 
 describe('ContaReceberController', () => {
   let controller: ContaReceberController;
@@ -18,7 +52,10 @@ describe('ContaReceberController', () => {
             findAll: jest.fn(),
             findOne: jest.fn(),
             update: jest.fn(),
-            unactivate: jest.fn(),
+            delete: jest.fn(),
+            exportPdf: jest.fn(),
+            baixar: jest.fn(),
+            findTotalPago: jest.fn(),
           },
         },
       ],
@@ -33,114 +70,93 @@ describe('ContaReceberController', () => {
   });
 
   describe('create', () => {
-    it('criar um novo usuário', async () => {
-      const createContaReceberDto = {
-        nome: 'Nome Teste',
-        email: 'nome.teste@teste.com',
-        senha: '123456',
-        ativo: true,
-        admin: true,
-        permissao: [],
-      };
+    it('should create a new conta-receber', async () => {
+      jest.spyOn(service, 'create').mockResolvedValue(mockContaReceber);
 
-      const mockContaReceber = Object.assign(createContaReceberDto, { id: 1 });
+      const response = await controller.create(mockCreateContaReceberDto);
 
-      const spyServiceCreate = jest
-        .spyOn(service, 'create')
-        .mockReturnValue(Promise.resolve(mockContaReceber) as any);
-
-      const response = await controller.create(createContaReceberDto);
-
+      expect(response).toBeInstanceOf(HttpResponse);
       expect(response.message).toEqual(EMensagem.SALVO_SUCESSO);
       expect(response.data).toEqual(mockContaReceber);
-      expect(spyServiceCreate).toHaveBeenCalled();
     });
   });
 
   describe('findAll', () => {
-    it('obter uma listagem de usuários', async () => {
-      const mockListaContaReceber = [
-        {
-          id: 1,
-          nome: 'Nome Teste',
-          email: 'nome.teste@teste.com',
-          senha: '123456',
-          ativo: true,
-          admin: true,
-          permissao: [],
-        },
-      ];
+    it('should return a list of conta-receber', async () => {
+      const mockList: ContaReceber[] = [mockContaReceber];
+      jest.spyOn(service, 'findAll').mockResolvedValue({
+        message: undefined,
+        data: mockList,
+        count: mockList.length,
+      });
 
-      const spyServiceFindAll = jest
-        .spyOn(service, 'findAll')
-        .mockReturnValue(Promise.resolve(mockListaContaReceber) as any);
+      const response = await controller.findAll(
+        0,
+        10,
+        mockFindAllOrder,
+        mockFindAllFilter,
+      );
 
-      const response = await controller.findAll(1, 10);
-
-      expect(response.message).toEqual(undefined);
-      expect(response.data).toEqual(mockListaContaReceber);
-      expect(spyServiceFindAll).toHaveBeenCalled();
+      expect(response.data).toEqual(mockList);
+      expect(response.count).toEqual(mockList.length);
     });
   });
 
   describe('findOne', () => {
-    it('obter um usuário', async () => {
-      const mockContaReceber = {
-        id: 1,
-        nome: 'Nome Teste',
-        email: 'nome.teste@teste.com',
-        senha: '123456',
-        ativo: true,
-        admin: true,
-        permissao: [],
-      };
-      const spyServiceFindOne = jest
-        .spyOn(service, 'findOne')
-        .mockReturnValue(Promise.resolve(mockContaReceber) as any);
+    it('should return a conta-receber', async () => {
+      jest.spyOn(service, 'findOne').mockResolvedValue(mockContaReceber);
 
       const response = await controller.findOne(1);
 
-      expect(response.message).toEqual(undefined);
       expect(response.data).toEqual(mockContaReceber);
-      expect(spyServiceFindOne).toHaveBeenCalled();
     });
   });
 
   describe('update', () => {
-    it('alterar um usuário', async () => {
-      const mockContaReceber = {
-        id: 1,
-        nome: 'Nome Teste',
-        email: 'nome.teste@teste.com',
-        senha: '123456',
-        ativo: true,
-        admin: true,
-        permissao: [],
-      };
+    it('should update a conta-receber', async () => {
+      jest.spyOn(service, 'update').mockResolvedValue(mockContaReceber);
 
-      const spyServiceUpdate = jest
-        .spyOn(service, 'update')
-        .mockReturnValue(Promise.resolve(mockContaReceber) as any);
-
-      const response = await controller.update(1, mockContaReceber);
+      const response = await controller.update(
+        mockUpdateContaReceberDto.id,
+        mockUpdateContaReceberDto,
+      );
 
       expect(response.message).toEqual(EMensagem.ATUALIZADO_SUCESSO);
       expect(response.data).toEqual(mockContaReceber);
-      expect(spyServiceUpdate).toHaveBeenCalled();
     });
   });
 
-  describe('unactivate', () => {
-    it('desativar um usuário', async () => {
-      const spyServiceUpdate = jest
-        .spyOn(service, 'unactivate')
-        .mockReturnValue(Promise.resolve(false) as any);
+  describe('delete', () => {
+    it('should delete a conta-receber', async () => {
+      jest.spyOn(service, 'delete').mockResolvedValue(true);
 
-      const response = await controller.unactivate(1);
+      const response = await controller.delete(mockUpdateContaReceberDto.id);
 
       expect(response.message).toEqual(EMensagem.DESATIVADO_SUCESSO);
-      expect(response.data).toEqual(false);
-      expect(spyServiceUpdate).toHaveBeenCalled();
+      expect(response.data).toEqual(true);
+    });
+  });
+
+  describe('baixar', () => {
+    it('should baixar a conta-receber', async () => {
+      jest.spyOn(service, 'baixar').mockResolvedValue(true);
+
+      const response = await controller.baixar(
+        mockCreateContaReceberDto.baixa[0] as any,
+      );
+
+      expect(response.message).toEqual(EMensagem.BAIXA_REALIZADA);
+      expect(response.data).toEqual(true);
+    });
+  });
+
+  describe('findTotalPago', () => {
+    it('should return total pago', async () => {
+      jest.spyOn(service, 'findTotalPago').mockResolvedValue(1000);
+
+      const response = await controller.findTotalPago(true);
+
+      expect(response.data).toEqual(1000);
     });
   });
 });

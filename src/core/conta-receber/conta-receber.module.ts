@@ -7,7 +7,6 @@ import {
 } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { grpcClientConfig } from '../../config/grpc/grpc.config';
-import { ExportPdfService } from '../../shared/services/export-pdf.service';
 import { RmqClientService } from '../../shared/services/rmq-client.service';
 import { RedisCacheModule } from '../redis-cache/redis-cache.module';
 import { ContaReceberController } from './conta-receber.controller';
@@ -23,7 +22,6 @@ import { ContaReceber } from './entities/conta-receber.entity';
   controllers: [ContaReceberController],
   providers: [
     ContaReceberService,
-    ExportPdfService,
     RmqClientService,
     {
       provide: 'MAIL_SERVICE',

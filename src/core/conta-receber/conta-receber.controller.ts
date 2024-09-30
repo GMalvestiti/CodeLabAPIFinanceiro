@@ -91,24 +91,6 @@ export class ContaReceberController {
     return new HttpResponse<boolean>(data).onUnactivated();
   }
 
-  @Get('export/pdf/:idUsuario/:order')
-  async exportPdf(
-    @Param('idUsuario') idUsuario: number,
-    @Param('order', ParseFindAllOrderPipe) order: IFindAllOrder,
-    @Query('filter', ParseFindAllFilterPipe)
-    filter: IFindAllFilter | IFindAllFilter[],
-  ): Promise<IResponse<boolean>> {
-    const data = await this.contaReceberService.exportPdf(
-      idUsuario,
-      order,
-      filter,
-    );
-
-    return new HttpResponse<boolean>(data).onSuccess(
-      EMensagem.INICIADA_GERACAO_PDF,
-    );
-  }
-
   @Put('baixar')
   async baixar(
     @Body() createContaReceberBaixaDto: CreateContaReceberBaixaDto,
